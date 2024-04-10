@@ -11,9 +11,9 @@ Ib = 15;
 
 % Inizializzazione solver simbolico con funzioni del sistema
 syms G beta I gamma r
-f = [-p1*(G-Gb)-beta*G+gamma/VG, -n*I + r/V1, -p2*beta+ p3*(I-Ib)];
+f = [-p1*(G-Gb)-beta*G+gamma/VG, -n*I + r/V1, -p2*beta + p3*(I-Ib)];
 g = G;
-x = [G, beta, I];
+x = [G, I, beta];
 u = [r gamma];
 
 %% Calcolo punto di equilibrio
@@ -28,7 +28,7 @@ I_eq = r_eq/(n*V1);
 beta_eq = p3/p2 .* (I_eq - Ib);
 G_eq = (gamma_eq/VG + p1*Gb)/(p1+beta_eq);
 
-X_eq = [ G_eq I_eq beta_eq ];
+x_eq = [ G_eq I_eq beta_eq ];
 % Osserviamo che G_eq corrisponde al valore corretto di glicemia (81)
 
 %%% Soluzione con solver simbolico
@@ -36,7 +36,7 @@ X_eq = [ G_eq I_eq beta_eq ];
 % simbolico per risolvere il sistema di equazioni
 [G_eq, I_eq, beta_eq] = solve(subs(f,u,u_eq)==[0 0 0]);
 % Il comando double calcola il valore delle frazioni
-X_eq = double([ G_eq I_eq beta_eq ])
+x_eq = double([ G_eq I_eq beta_eq ])
 
 % Il risultato calcolato da MATLAB è identico a quello trovato a mano
 
@@ -50,13 +50,13 @@ X_eq = double([ G_eq I_eq beta_eq ])
 % corrispondente valore nel punto di equilibrio
 
 A = jacobian(f,x);
-A = double(subs(A,x,X_eq));
+A = double(subs(A,x,x_eq));
 
 B = jacobian(f,u);
 B = double(subs(B,u,u_eq));
 
 C = jacobian(g,x);
-C = double(subs(C,x,X_eq));
+C = double(subs(C,x,x_eq));
 
 D = jacobian(g,u);
 D = double(subs(D,u,u_eq));
@@ -67,10 +67,10 @@ W = minreal(zpk(inv(s*eye(size(A))-A)));
 
 %%% Stabilità interna
 E = real(eig(A))
-% Il sistema è instabile in quanto è presente un autovalore maggiore di zero
+% Il sistema è stabile perché tutti gli autovalori sono negativi
 
 %%% Stabilità BIBO
 H = C*W*B;
 p = pole(H)
 
-% Il sistema non è stabile BIBO in quanto è presente un polo positivo
+% Il sistema + stabile BIBO in quanto tutti i poli sono negativi
