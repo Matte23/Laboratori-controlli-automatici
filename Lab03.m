@@ -74,3 +74,17 @@ H = C*W*B;
 p = pole(H)
 
 % Il sistema + stabile BIBO in quanto tutti i poli sono negativi
+
+%% Studio raggiungibilità e controllabilità
+M_R = ctrb(A,B);
+rank(M_R)
+% La matrice è di rango 3, quindi il sistema è completamente raggiungibile
+
+%% Progettazione della legge di controllo
+lambda_k = [-1 -2 -3];
+
+% Calcolo K
+K = place(A,B(:,1),lambda_k);
+
+% Calcolo alpha
+alpha = inv(-(C-D(:,1)*K)*((A-B(:,1)*K)\B(:,1))+D(:,1));
