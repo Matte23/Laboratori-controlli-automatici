@@ -86,5 +86,5 @@ lambda_k = [-1 -2 -3];
 % Calcolo K
 K = place(A,B(:,1),lambda_k);
 
-% Calcolo alpha
-alpha = inv(-(C-D(:,1)*K)*((A-B(:,1)*K)\B(:,1))+D(:,1));
+% Non serve calcolare alfa in quanto il controllore serve solo a far si che
+% il sistema non si sposti dallo stato di equilibrio
